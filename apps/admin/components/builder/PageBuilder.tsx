@@ -1,14 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Monitor, Smartphone, ExternalLink, Save } from 'lucide-react'
+import { Monitor, Smartphone, ExternalLink } from 'lucide-react'
 import { useBuilder } from '@/hooks/useBuilder'
 import { SectionPanel } from './SectionPanel'
 import { BuilderCanvas } from './BuilderCanvas'
 import { PropsEditor } from './PropsEditor'
 import { SectionPreview } from './SectionPreview'
-import { Topbar } from '@/components/layout/Topbar'
-import { Button } from '@/components/ui/Button'
 
 type ViewMode = 'canvas' | 'preview'
 type DeviceMode = 'desktop' | 'mobile'

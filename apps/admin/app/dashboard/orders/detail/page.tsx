@@ -6,7 +6,6 @@ import { useOrder, useUpdateOrder } from '@/hooks/useOrders'
 import { Topbar } from '@/components/layout/Topbar'
 import { Card, CardHeader, CardContent } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
 import { formatCurrency, formatDate, ORDER_STATUS_LABELS, ORDER_STATUS_COLORS } from '@/lib/utils'
 
 interface Props { params: { id: string } }

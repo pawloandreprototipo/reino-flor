@@ -4,7 +4,7 @@ export interface Section {
   id: string
   type: SectionType
   order: number
-  props: Record<string, any>
+  props: Record<string, unknown>
 }
 
 export interface SectionDefinition {
@@ -12,7 +12,7 @@ export interface SectionDefinition {
   label: string
   icon: string
   description: string
-  defaultProps: Record<string, any>
+  defaultProps: Record<string, unknown>
   fields: FieldDefinition[]
 }
 

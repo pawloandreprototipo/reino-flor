@@ -78,9 +78,9 @@ function PreviewContent({ section }: { section: Section }) {
         <div className="bg-gray-50 p-4">
           <p className="mb-3 text-sm font-bold text-gray-900">{props.title || 'Depoimentos'}</p>
           <div className="grid grid-cols-2 gap-2">
-            {(props.items ?? []).slice(0, 2).map((item: any, i: number) => (
+            {(props.items ?? []).slice(0, 2).map((item: { text: string; name: string }, i: number) => (
               <div key={i} className="rounded-lg bg-white p-2 shadow-sm">
-                <p className="text-xs text-gray-600 line-clamp-2">"{item.text}"</p>
+                <p className="text-xs text-gray-600 line-clamp-2">&quot;{item.text}&quot;</p>
                 <p className="mt-1 text-xs font-semibold text-gray-800">— {item.name}</p>
               </div>
             ))}
