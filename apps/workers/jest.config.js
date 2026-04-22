@@ -6,4 +6,7 @@ module.exports = {
   moduleNameMapper: {
     '^@reino-flor/database$': '<rootDir>/../../packages/database/src/index.ts',
   },
+  transform: {
+    '^.+\\.ts$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }],
+  },
 }
