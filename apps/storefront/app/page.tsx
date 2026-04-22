@@ -1,3 +1,4 @@
+import React from 'react'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { ProductGridSection } from '@/components/sections/ProductGridSection'
 import { NewsletterSection } from '@/components/sections/NewsletterSection'
@@ -58,13 +59,14 @@ function getDefaultSections(): Section[] {
 }
 
 function renderSection(section: Section) {
+  const props = section.props as Record<string, string | number | boolean>
   switch (section.type) {
     case 'hero':
-      return <HeroSection key={section.id} {...section.props} />
+      return <HeroSection key={section.id} {...(props as React.ComponentProps<typeof HeroSection>)} />
     case 'product_grid':
-      return <ProductGridSection key={section.id} {...section.props} />
+      return <ProductGridSection key={section.id} {...(props as React.ComponentProps<typeof ProductGridSection>)} />
     case 'newsletter':
-      return <NewsletterSection key={section.id} {...section.props} />
+      return <NewsletterSection key={section.id} {...(props as React.ComponentProps<typeof NewsletterSection>)} />
     default:
       return null
   }
