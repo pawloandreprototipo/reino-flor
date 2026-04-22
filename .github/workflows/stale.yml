@@ -1,0 +1,32 @@
+name: Stale Issues & PRs
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Toda segunda às 9h UTC
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    name: Mark stale issues and PRs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: >
+            ⏰ Esta issue está inativa há 30 dias. Será fechada em 7 dias
+            se não houver atividade. Comente se ainda for relevante.
+          stale-pr-message: >
+            ⏰ Esta PR está inativa há 14 dias. Será fechada em 7 dias
+            se não houver atividade. Atualize ou comente se ainda for relevante.
+          stale-issue-label: 'stale'
+          stale-pr-label: 'stale'
+          days-before-issue-stale: 30
+          days-before-pr-stale: 14
+          days-before-issue-close: 7
+          days-before-pr-close: 7
+          exempt-issue-labels: 'pinned,security,critical'
+          exempt-pr-labels: 'pinned,security,wip'

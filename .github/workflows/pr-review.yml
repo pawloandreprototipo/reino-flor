@@ -1,0 +1,124 @@
+name: PR Review
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  validate-title:
+    name: Validate PR title (Conventional Commits)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title format
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+          scopes: |
+            admin
+            api
+            auth
+            database
+            ui
+            deps
+            ci
+          requireScope: false
+          subjectPattern: ^.+$
+          subjectPatternError: |
+            O título da PR deve seguir Conventional Commits:
+            Ex: feat(admin): adiciona página de relatórios
+
+  validate-branch:
+    name: Validate branch naming
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        run: |
+          BRANCH="${{ github.head_ref }}"
+          PATTERN="^(feature|bugfix|hotfix|release)/.+"
+
+          if [[ ! "$BRANCH" =~ $PATTERN ]]; then
+            echo "❌ Branch '$BRANCH' não segue o padrão Git Flow."
+            echo ""
+            echo "Use um dos prefixos:"
+            echo "  feature/  - para novas funcionalidades"
+            echo "  bugfix/   - para correções"
+            echo "  hotfix/   - para correções urgentes"
+            echo "  release/  - para preparação de release"
+            exit 1
+          fi
+
+          echo "✅ Branch '$BRANCH' segue o padrão Git Flow."
+
+  size-label:
+    name: Label PR by size
+    runs-on: ubuntu-latest
+    steps:
+      - uses: codelytv/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          xs_label: 'size/xs'
+          xs_max_size: 10
+          s_label: 'size/s'
+          s_max_size: 50
+          m_label: 'size/m'
+          m_max_size: 200
+          l_label: 'size/l'
+          l_max_size: 500
+          xl_label: 'size/xl'
+          fail_if_xl: false
+
+  detect-changes:
+    name: Detect changed packages
+    runs-on: ubuntu-latest
+    outputs:
+      admin: ${{ steps.filter.outputs.admin }}
+      api: ${{ steps.filter.outputs.api }}
+      auth: ${{ steps.filter.outputs.auth }}
+      database: ${{ steps.filter.outputs.database }}
+      ui: ${{ steps.filter.outputs.ui }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            admin:
+              - 'apps/admin/**'
+            api:
+              - 'apps/api/**'
+            auth:
+              - 'packages/auth/**'
+            database:
+              - 'packages/database/**'
+            ui:
+              - 'packages/ui/**'
+
+      - name: Summary
+        run: |
+          echo "### 📦 Pacotes alterados" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Pacote | Alterado |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| admin | ${{ steps.filter.outputs.admin }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| api | ${{ steps.filter.outputs.api }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| auth | ${{ steps.filter.outputs.auth }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| database | ${{ steps.filter.outputs.database }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| ui | ${{ steps.filter.outputs.ui }} |" >> $GITHUB_STEP_SUMMARY

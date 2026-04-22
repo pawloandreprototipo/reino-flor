@@ -1,0 +1,96 @@
+# Tipos
+- name: bug
+  color: d73a4a
+  description: Algo não está funcionando
+
+- name: enhancement
+  color: a2eeef
+  description: Nova funcionalidade ou melhoria
+
+- name: documentation
+  color: 0075ca
+  description: Melhorias ou adições na documentação
+
+- name: refactor
+  color: e4e669
+  description: Refatoração de código
+
+- name: performance
+  color: fbca04
+  description: Melhoria de performance
+
+# Prioridade
+- name: priority/critical
+  color: b60205
+  description: Prioridade crítica
+
+- name: priority/high
+  color: d93f0b
+  description: Prioridade alta
+
+- name: priority/medium
+  color: fbca04
+  description: Prioridade média
+
+- name: priority/low
+  color: 0e8a16
+  description: Prioridade baixa
+
+# Tamanho da PR
+- name: size/xs
+  color: 3CBF00
+  description: PR extra pequena (< 10 linhas)
+
+- name: size/s
+  color: 5D9801
+  description: PR pequena (< 50 linhas)
+
+- name: size/m
+  color: 7F7203
+  description: PR média (< 200 linhas)
+
+- name: size/l
+  color: A14C05
+  description: PR grande (< 500 linhas)
+
+- name: size/xl
+  color: C32607
+  description: PR extra grande (500+ linhas)
+
+# Status
+- name: stale
+  color: ededed
+  description: Inativa há muito tempo
+
+- name: wip
+  color: 7057ff
+  description: Trabalho em progresso
+
+- name: pinned
+  color: 006b75
+  description: Fixada, não será fechada automaticamente
+
+- name: security
+  color: ee0701
+  description: Relacionada a segurança
+
+# Pacotes
+- name: pkg/admin
+  color: 1d76db
+  description: App admin
+
+- name: pkg/api
+  color: 1d76db
+  description: App API
+
+- name: pkg/auth
+  color: 1d76db
+  description: Package auth
+
+- name: pkg/database
+  color: 1d76db
+  description: Package database
+
+- name: pkg/ui
+  color: 1d76db
+  description: Package UI

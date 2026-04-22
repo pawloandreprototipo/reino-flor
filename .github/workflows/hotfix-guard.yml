@@ -1,0 +1,29 @@
+name: Hotfix Guard
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  check-hotfix:
+    name: Validate PR to main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch origin
+        run: |
+          BRANCH="${{ github.head_ref }}"
+
+          if [[ "$BRANCH" =~ ^(hotfix|release)/ ]]; then
+            echo "✅ Branch '$BRANCH' pode ser mergeada em main."
+          else
+            echo "❌ Apenas branches hotfix/* e release/* podem ser mergeadas em main."
+            echo ""
+            echo "Branch atual: $BRANCH"
+            echo ""
+            echo "Se é uma feature ou bugfix, faça merge em develop primeiro."
+            exit 1
+          fi

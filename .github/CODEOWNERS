@@ -1,0 +1,15 @@
+# Owners padrão para todo o repositório
+* @reino-flor/core-team
+
+# Apps
+apps/admin/ @reino-flor/frontend-team
+apps/api/ @reino-flor/backend-team
+
+# Packages
+packages/auth/ @reino-flor/backend-team
+packages/database/ @reino-flor/backend-team
+packages/ui/ @reino-flor/frontend-team
+
+# Infraestrutura e CI
+.github/ @reino-flor/devops-team
+docker-compose.yml @reino-flor/devops-team

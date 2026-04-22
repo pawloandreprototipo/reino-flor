@@ -1,0 +1,27 @@
+# <tipo>(<escopo>): <descrição>
+#
+# [corpo opcional]
+#
+# [rodapé opcional]
+#
+# --- TIPOS ---
+# feat:     Nova funcionalidade
+# fix:      Correção de bug
+# docs:     Documentação
+# style:    Formatação (sem mudança de código)
+# refactor: Refatoração
+# perf:     Performance
+# test:     Testes
+# build:    Build / dependências
+# ci:       CI/CD
+# chore:    Outras mudanças
+# revert:   Reverte commit
+#
+# --- ESCOPOS ---
+# admin, api, auth, database, ui, deps, ci
+#
+# --- REGRAS ---
+# - Título com no máximo 72 caracteres
+# - Não termine o título com ponto
+# - Use imperativo: "adiciona" não "adicionado"
+# - Separe título do corpo com linha em branco
