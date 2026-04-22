@@ -9,7 +9,8 @@ interface Section {
   id: string
   type: string
   order: number
-  props: Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  props: Record<string, any>
 }
 
 async function getHomeSections(): Promise<Section[]> {
