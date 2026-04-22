@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, SlidersHorizontal } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { useProducts, Product } from '@/hooks/useProducts'
 import { useCart } from '@/context/CartContext'
 import { ProductCard } from '@/components/ui/ProductCard'

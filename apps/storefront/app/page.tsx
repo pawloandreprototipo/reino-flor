@@ -9,7 +9,7 @@ interface Section {
   id: string
   type: string
   order: number
-  props: Record<string, any>
+  props: Record<string, unknown>
 }
 
 async function getHomeSections(): Promise<Section[]> {

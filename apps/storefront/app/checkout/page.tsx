@@ -66,8 +66,9 @@ export default function CheckoutPage() {
       })
       clearCart()
       router.push(`/pedido/${res.data.data.id}`)
-    } catch (e: any) {
-      setError(e.response?.data?.error ?? 'Erro ao finalizar pedido')
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { error?: string } } }
+      setError(err.response?.data?.error ?? 'Erro ao finalizar pedido')
     } finally {
       setLoading(false)
     }

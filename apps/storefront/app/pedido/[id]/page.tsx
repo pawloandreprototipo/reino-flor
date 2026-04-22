@@ -71,7 +71,7 @@ export default function PedidoPage() {
           </h2>
         </div>
         <div className="divide-y divide-gray-50">
-          {order.items?.map((item: any) => (
+          {order.items?.map((item: { id: string; name: string; quantity: number; price: string | number; total: string | number }) => (
             <div key={item.id} className="flex items-center justify-between px-5 py-3">
               <div>
                 <p className="text-sm font-medium text-gray-900">{item.name}</p>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { CheckCircle, Clock, XCircle, Copy, RefreshCw } from 'lucide-react'
 import { api } from '@/lib/api'
