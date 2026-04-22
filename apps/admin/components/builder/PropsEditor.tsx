@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button'
 
 interface PropsEditorProps {
   section: Section
-  onUpdate: (id: string, props: Record<string, any>) => void
+  onUpdate: (id: string, props: Record<string, unknown>) => void
   onClose: () => void
 }
 
@@ -18,9 +18,9 @@ export function PropsEditor({ section, onUpdate, onClose }: PropsEditorProps) {
 
   useEffect(() => {
     reset(section.props)
-  }, [section.id, reset])
+  }, [section.id, reset, section.props])
 
-  const onSubmit = (data: Record<string, any>) => {
+  const onSubmit = (data: Record<string, unknown>) => {
     onUpdate(section.id, data)
   }
 

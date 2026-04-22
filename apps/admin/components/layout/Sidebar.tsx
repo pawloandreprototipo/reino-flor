@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, ShoppingCart, Users,
-  Tag, BarChart2, Settings, LogOut, Flower2, Layers,
+  Tag, BarChart2, LogOut, Flower2, Layers,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 

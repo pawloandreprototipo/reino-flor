@@ -58,7 +58,7 @@ export function ProductForm({ id }: ProductFormProps) {
       setValue('price', Number(product.price))
       setValue('comparePrice', product.comparePrice ? Number(product.comparePrice) : '')
       setValue('sku', product.sku ?? '')
-      setValue('status', product.status as any)
+      setValue('status', product.status as 'DRAFT' | 'ACTIVE' | 'ARCHIVED')
       setValue('featured', product.featured)
     }
   }, [product, setValue])

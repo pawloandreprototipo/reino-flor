@@ -49,7 +49,7 @@ export function Table<T>({ columns, data, keyField, loading, emptyMessage = 'Nen
               >
                 {columns.map((col) => (
                   <td key={col.key} className={`px-4 py-3 text-gray-700 ${col.className ?? ''}`}>
-                    {col.render ? col.render(row) : String((row as any)[col.key] ?? '')}
+                    {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key] ?? '')}
                   </td>
                 ))}
               </tr>
