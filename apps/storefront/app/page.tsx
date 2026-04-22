@@ -59,14 +59,13 @@ function getDefaultSections(): Section[] {
 }
 
 function renderSection(section: Section) {
-  const props = section.props as Record<string, string | number | boolean>
   switch (section.type) {
     case 'hero':
-      return <HeroSection key={section.id} {...(props as React.ComponentProps<typeof HeroSection>)} />
+      return <HeroSection key={section.id} {...(section.props as unknown as React.ComponentProps<typeof HeroSection>)} />
     case 'product_grid':
-      return <ProductGridSection key={section.id} {...(props as React.ComponentProps<typeof ProductGridSection>)} />
+      return <ProductGridSection key={section.id} {...(section.props as unknown as React.ComponentProps<typeof ProductGridSection>)} />
     case 'newsletter':
-      return <NewsletterSection key={section.id} {...(props as React.ComponentProps<typeof NewsletterSection>)} />
+      return <NewsletterSection key={section.id} {...(section.props as unknown as React.ComponentProps<typeof NewsletterSection>)} />
     default:
       return null
   }
