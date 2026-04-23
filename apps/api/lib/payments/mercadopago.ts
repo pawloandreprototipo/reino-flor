@@ -83,7 +83,7 @@ export async function createMPPreference(params: CreateMPPreferenceParams) {
   const preference = new Preference(client)
   const result = await preference.create({
     body: {
-      items: params.items,
+      items: params.items.map((item, idx) => ({ id: String(idx + 1), ...item })),
       payer: { email: params.payerEmail },
       external_reference: params.orderId,
       back_urls: params.backUrls,

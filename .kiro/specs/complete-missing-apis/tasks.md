@@ -1,0 +1,106 @@
+# Tasks: Complete Missing APIs
+
+- [x] 1. Affiliates API
+  - [x] 1.1 Implement GET/POST /api/affiliates (list and create affiliates)
+    - Create `apps/api/pages/api/affiliates/index.ts` replacing the 501 placeholder
+    - GET: paginated list of affiliates scoped by store's tenant, include user name/email and `_count` for clicks/commissions
+    - POST: validate with Zod schema (userId, code, commissionRate?), check code uniqueness, check userId uniqueness, create affiliate
+    - Protect with `withAuth(handler, 'affiliates:manage')`
+    - Follow existing pagination pattern: `{ page, limit }` query params, response `{ affiliates, total, page, limit }`
+  - [x] 1.2 Implement GET/PUT /api/affiliates/[id] (detail and update)
+    - Create `apps/api/pages/api/affiliates/[id].ts`
+    - GET: return affiliate with user info, recent clicks, and commissions
+    - PUT: validate with Zod schema (commissionRate?, active?), update affiliate
+    - Scope by tenant (affiliate's user must belong to same tenant)
+    - Protect with `withAuth(handler, 'affiliates:manage')`
+  - [x] 1.3 Implement POST /api/affiliates/track (public click tracking)
+    - Create `apps/api/pages/api/affiliates/track.ts`
+    - No authentication required
+    - Validate body with Zod: `{ code: string }`
+    - Find active affiliate by code, return 404 if not found or inactive
+    - Create AffiliateClick with ip (from req headers), userAgent, referer
+    - Return `{ affiliateCode: code }`
+  - [x] 1.4 Implement GET /api/affiliates/[id]/commissions (list commissions)
+    - Create `apps/api/pages/api/affiliates/[id]/commissions.ts`
+    - Paginated list of commissions for the affiliate
+    - Support filtering by status query param (PENDING, APPROVED, PAID, CANCELLED)
+    - Protect with `withAuth(handler, 'affiliates:manage')`
+- [x] 2. Vendors API
+  - [x] 2.1 Implement GET/POST /api/vendors (list vendors and register as vendor)
+    - Replace 501 placeholder in `apps/api/pages/api/vendors/index.ts`
+    - GET: paginated list of vendors scoped by tenant, include user info and `_count` for products/payouts. Requires 'vendors:manage' permission.
+    - POST: any authenticated user can register. Validate with Zod (storeName required, description?, logoUrl?, bankInfo?). Check userId uniqueness. Create vendor with status PENDING, commissionRate 10.
+    - GET uses `withAuth(handler, 'vendors:manage')`, POST uses `withAuth(handler)` (no permission)
+    - Since GET and POST need different permissions, handle method check inside handler: for GET check permission manually, for POST allow any authenticated user
+  - [x] 2.2 Implement GET/PUT /api/vendors/[id] (detail and admin update)
+    - Create `apps/api/pages/api/vendors/[id].ts`
+    - GET: vendor details with products and payouts included
+    - PUT: validate with Zod (status?, commissionRate?), update vendor
+    - Protect with `withAuth(handler, 'vendors:manage')`
+  - [x] 2.3 Implement GET/POST /api/vendors/[id]/payouts (list and create payouts)
+    - Create `apps/api/pages/api/vendors/[id]/payouts.ts`
+    - GET: paginated list of payouts for the vendor
+    - POST: validate with Zod (amount: positive number, notes?), create payout with status PENDING
+    - Verify vendor exists and belongs to tenant before operations
+    - Protect with `withAuth(handler, 'vendors:manage')`
+- [x] 3. Reviews API
+  - [x] 3.1 Implement GET /api/reviews and PUT /api/reviews/[id] (admin moderation)
+    - Create `apps/api/pages/api/reviews/index.ts` for GET (list all reviews for admin's store)
+    - Support filtering by status, productId, rating via query params
+    - Include product name and user name/email in response
+    - Paginated response
+    - Protect GET with `withAuth(handler, 'products:read')`
+    - Create `apps/api/pages/api/reviews/[id].ts` for PUT (approve/reject)
+    - Validate with Zod: `{ status: 'APPROVED' | 'REJECTED' }`
+    - Protect PUT with `withAuth(handler, 'products:write')`
+  - [x] 3.2 Implement POST /api/storefront/reviews (customer review submission)
+    - Create `apps/api/pages/api/storefront/reviews.ts`
+    - Validate with Zod: `{ productId, rating (1-5 int), title?, body? }`
+    - Verify product exists and is ACTIVE
+    - Check unique constraint: user hasn't already reviewed this product
+    - Create review with status PENDING
+    - Protect with `withAuth(handler)` (any authenticated user)
+  - [x] 3.3 Implement GET /api/storefront/products/[slug]/reviews (public product reviews)
+    - Create `apps/api/pages/api/storefront/products/[slug]/reviews.ts`
+    - No authentication required
+    - Find product by slug, return 404 if not found
+    - Return paginated APPROVED reviews only
+    - Calculate and include avgRating from all approved reviews
+    - Include user name (not email) in review data
+- [x] 4. Categories API
+  - [x] 4.1 Implement GET/POST /api/categories (list and create categories)
+    - Create `apps/api/pages/api/categories/index.ts`
+    - GET: all categories for admin's store as flat list, include `_count` for products and children
+    - POST: validate with Zod (name, slug required; parentId?, description?, imageUrl?, active?, sortOrder?)
+    - Check slug uniqueness within store
+    - If parentId provided, verify parent exists in same store
+    - Protect GET with `withAuth(handler, 'products:read')`, POST with `withAuth(handler, 'products:write')`
+    - Since permissions differ, use `withAuth(handler, 'products:read')` and check write permission manually for POST
+  - [x] 4.2 Implement PUT/DELETE /api/categories/[id] (update and delete)
+    - Create `apps/api/pages/api/categories/[id].ts`
+    - PUT: validate with Zod (all fields optional), check slug uniqueness if slug is being changed
+    - DELETE: check category has zero products AND zero children before deleting, return 400 with message if either exists
+    - Protect PUT with `withAuth(handler, 'products:write')`, DELETE with `withAuth(handler, 'products:delete')`
+    - Use `withAuth(handler, 'products:write')` and check delete permission manually
+  - [x] 4.3 Implement GET /api/storefront/categories (public category tree)
+    - Create `apps/api/pages/api/storefront/categories.ts`
+    - No authentication required
+    - Resolve store from storeSlug query parameter
+    - Fetch all active categories for the store
+    - Build nested tree structure: root nodes (parentId null) with nested children arrays
+    - Sort by sortOrder at each level
+    - Include product counts per category
+- [x] 5. Cart API
+  - [x] 5.1 Implement GET/POST/DELETE /api/cart (get cart, add item, clear cart)
+    - Create `apps/api/pages/api/cart/index.ts`
+    - GET: return user's cart items with product details (name, slug, price, first image) and variant info, calculate total and itemCount
+    - POST: validate with Zod (productId, variantId?, quantity: positive int). Verify product is ACTIVE. If variantId, verify it belongs to product. Upsert: if same productId+variantId exists, increment quantity.
+    - DELETE: clear all cart items for the authenticated user
+    - Protect with `withAuth(handler)` (any authenticated user)
+    - All queries scoped by userId from JWT (user.sub)
+  - [x] 5.2 Implement PUT/DELETE /api/cart/[id] (update and remove cart item)
+    - Create `apps/api/pages/api/cart/[id].ts`
+    - PUT: validate with Zod (quantity: positive int), update cart item quantity
+    - DELETE: remove specific cart item
+    - Both operations must verify cart item belongs to authenticated user (userId = user.sub), return 404 if not
+    - Protect with `withAuth(handler)` (any authenticated user)

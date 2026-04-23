@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { z } from 'zod/v3'
 import { useCart } from '@/context/CartContext'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
@@ -66,8 +66,9 @@ export default function CheckoutPage() {
       })
       clearCart()
       router.push(`/pedido/${res.data.data.id}`)
-    } catch (e: any) {
-      setError(e.response?.data?.error ?? 'Erro ao finalizar pedido')
+    } catch (e: unknown) {
+      const err = e as { response?: { data?: { error?: string } } }
+      setError(err.response?.data?.error ?? 'Erro ao finalizar pedido')
     } finally {
       setLoading(false)
     }

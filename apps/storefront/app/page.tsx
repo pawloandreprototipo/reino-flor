@@ -1,3 +1,4 @@
+import React from 'react'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { ProductGridSection } from '@/components/sections/ProductGridSection'
 import { NewsletterSection } from '@/components/sections/NewsletterSection'
@@ -9,6 +10,7 @@ interface Section {
   id: string
   type: string
   order: number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   props: Record<string, any>
 }
 
@@ -59,11 +61,11 @@ function getDefaultSections(): Section[] {
 function renderSection(section: Section) {
   switch (section.type) {
     case 'hero':
-      return <HeroSection key={section.id} {...section.props} />
+      return <HeroSection key={section.id} {...(section.props as unknown as React.ComponentProps<typeof HeroSection>)} />
     case 'product_grid':
-      return <ProductGridSection key={section.id} {...section.props} />
+      return <ProductGridSection key={section.id} {...(section.props as unknown as React.ComponentProps<typeof ProductGridSection>)} />
     case 'newsletter':
-      return <NewsletterSection key={section.id} {...section.props} />
+      return <NewsletterSection key={section.id} {...(section.props as unknown as React.ComponentProps<typeof NewsletterSection>)} />
     default:
       return null
   }

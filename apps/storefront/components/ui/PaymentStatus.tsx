@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { CheckCircle, Clock, XCircle, Copy, RefreshCw } from 'lucide-react'
 import { api } from '@/lib/api'
@@ -28,7 +28,7 @@ export function PaymentStatus({ orderId }: PaymentStatusProps) {
       const { data } = await api.get(`/api/payments/status?orderId=${orderId}`)
       return data.data
     },
-    refetchInterval: (data) => data?.status === 'PENDING' ? 5000 : false,
+    refetchInterval: (query) => query.state.data?.status === 'PENDING' ? 5000 : false,
   })
 
   const config = STATUS_CONFIG[payment?.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.PENDING

@@ -7,8 +7,10 @@ export interface Product {
   id: string
   name: string
   slug: string
+  description?: string
   price: number
   comparePrice?: number
+  sku?: string
   status: string
   featured: boolean
   category?: { id: string; name: string }
