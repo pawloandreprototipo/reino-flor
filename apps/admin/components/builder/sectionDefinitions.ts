@@ -4,7 +4,8 @@ export interface Section {
   id: string
   type: SectionType
   order: number
-  props: Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  props: Record<string, any>
 }
 
 export interface SectionDefinition {
@@ -12,7 +13,8 @@ export interface SectionDefinition {
   label: string
   icon: string
   description: string
-  defaultProps: Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  defaultProps: Record<string, any>
   fields: FieldDefinition[]
 }
 

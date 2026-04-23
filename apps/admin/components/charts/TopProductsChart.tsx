@@ -21,7 +21,7 @@ export function TopProductsChart({ data }: TopProductsChartProps) {
           tickFormatter={(v) => v.length > 12 ? v.slice(0, 12) + '…' : v}
         />
         <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `R$${v}`} />
-        <Tooltip formatter={(v: number) => formatCurrency(v)} />
+        <Tooltip formatter={(v) => formatCurrency(Number(v))} />
         <Bar dataKey="revenue" fill="#7c3aed" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
