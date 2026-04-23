@@ -1,3 +1,4 @@
+import type { Queue } from 'bullmq'
 import {
   orderConfirmationQueue,
   analyticsQueue,
@@ -8,10 +9,10 @@ export type {
   AnalyticsJobData,
 } from '@reino-flor/workers'
 
-export function getOrderConfirmationQueue() {
+export function getOrderConfirmationQueue(): Queue {
   return orderConfirmationQueue
 }
 
-export function getAnalyticsQueue() {
+export function getAnalyticsQueue(): Queue {
   return analyticsQueue
 }

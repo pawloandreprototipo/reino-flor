@@ -13,6 +13,7 @@
     "@reino-flor/auth": "workspace:*",
     "@reino-flor/database": "workspace:*",
     "@reino-flor/workers": "workspace:*",
+    "bullmq": "^5.12.0",
     "mercadopago": "^2.12.0",
     "next": "^14.2.0",
     "react": "^18.3.0",

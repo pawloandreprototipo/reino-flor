@@ -9,7 +9,7 @@ export function getStripe(): Stripe {
       // Retorna mock em desenvolvimento
       return createStripeMock()
     }
-    _stripe = new Stripe(key, { apiVersion: '2024-06-20' })
+    _stripe = new Stripe(key)
   }
   return _stripe
 }
