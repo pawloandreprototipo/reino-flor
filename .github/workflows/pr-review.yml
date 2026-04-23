@@ -35,6 +35,8 @@ jobs:
             api
             auth
             database
+            storefront
+            workers
             ui
             deps
             ci
