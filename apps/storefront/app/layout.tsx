@@ -7,9 +7,11 @@ import { Footer } from '@/components/layout/Footer'
 
 const inter = Inter({ subsets: ['latin'] })
 
+const storeName = process.env.NEXT_PUBLIC_STORE_NAME ?? 'Loja'
+
 export const metadata: Metadata = {
-  title: 'Reino Flor — Flores e Decoração',
-  description: 'A loja mais florida do Brasil 🌸',
+  title: `${storeName} — Loja Online`,
+  description: `Bem-vindo à ${storeName}. Encontre os melhores produtos com os melhores preços.`,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
