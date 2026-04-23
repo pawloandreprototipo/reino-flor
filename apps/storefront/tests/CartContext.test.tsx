@@ -1,7 +1,23 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { CartProvider, useCart } from '@/context/CartContext'
 
-// Componente auxiliar para testar o hook
+// Mock AuthContext so CartProvider can use useAuth()
+jest.mock('@/context/AuthContext', () => ({
+  useAuth: () => ({
+    user: null,
+    isLoggedIn: false,
+    login: jest.fn(),
+    logout: jest.fn(),
+    loading: false,
+    error: null,
+  }),
+}))
+
+// Mock useServerCart to avoid real API calls
+jest.mock('@/hooks/useServerCart', () => ({
+  mergeCartWithServer: jest.fn().mockResolvedValue({ items: [], total: 0, itemCount: 0 }),
+}))
+
 function CartTester() {
   const { items, addItem, removeItem, updateQty, itemCount, subtotal, clearCart } = useCart()
   return (
@@ -9,10 +25,10 @@ function CartTester() {
       <span data-testid="count">{itemCount}</span>
       <span data-testid="subtotal">{subtotal}</span>
       <span data-testid="items">{items.length}</span>
-      <button onClick={() => addItem({ productId: 'p1', name: 'Rosa', price: 50, quantity: 1, slug: 'rosa' })}>
+      <button onClick={() => addItem({ productId: 'p1', name: 'Camiseta', price: 50, quantity: 1, slug: 'camiseta' })}>
         add
       </button>
-      <button onClick={() => addItem({ productId: 'p1', name: 'Rosa', price: 50, quantity: 2, slug: 'rosa' })}>
+      <button onClick={() => addItem({ productId: 'p1', name: 'Camiseta', price: 50, quantity: 2, slug: 'camiseta' })}>
         add-more
       </button>
       <button onClick={() => removeItem('p1')}>remove</button>
