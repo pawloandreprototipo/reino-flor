@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { CheckCircle, Clock, XCircle, Copy, RefreshCw } from 'lucide-react'
 import { api } from '@/lib/api'
@@ -17,6 +17,39 @@ const STATUS_CONFIG = {
   FAILED: { label: 'Falhou', icon: XCircle, color: 'text-red-600', bg: 'bg-red-50' },
   CANCELLED: { label: 'Cancelado', icon: XCircle, color: 'text-gray-600', bg: 'bg-gray-50' },
   REFUNDED: { label: 'Reembolsado', icon: RefreshCw, color: 'text-purple-600', bg: 'bg-purple-50' },
+}
+
+function PixCountdown({ expiresAt }: { expiresAt: string }) {
+  const [remaining, setRemaining] = useState('')
+  const [expired, setExpired] = useState(false)
+
+  useEffect(() => {
+    const target = new Date(expiresAt).getTime()
+    const tick = () => {
+      const diff = target - Date.now()
+      if (diff <= 0) {
+        setExpired(true)
+        setRemaining('00:00')
+        return
+      }
+      const m = Math.floor(diff / 60000)
+      const s = Math.floor((diff % 60000) / 1000)
+      setRemaining(`${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`)
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [expiresAt])
+
+  if (expired) {
+    return <p className="text-center text-sm font-medium text-rose-600">PIX expirado</p>
+  }
+
+  return (
+    <p className="text-center text-sm text-violet-600">
+      Expira em <span className="font-mono font-bold">{remaining}</span>
+    </p>
+  )
 }
 
 export function PaymentStatus({ orderId }: PaymentStatusProps) {
@@ -63,12 +96,24 @@ export function PaymentStatus({ orderId }: PaymentStatusProps) {
         )}
       </div>
 
-      {/* PIX Code */}
+      {/* PIX Payment */}
       {payment.method === 'PIX' && payment.status === 'PENDING' && payment.pixCode && (
-        <div className="rounded-2xl border border-violet-200 bg-violet-50 p-5 space-y-3">
+        <div className="rounded-2xl border border-violet-200 bg-violet-50 p-5 space-y-4">
           <p className="text-sm font-bold text-violet-900">Pague via PIX</p>
-          <p className="text-xs text-violet-700">
-            Copie o código abaixo e cole no seu banco para pagar
+
+          {/* QR Code Image */}
+          {payment.pixQrCode && (
+            <div className="flex justify-center">
+              <img
+                src={payment.pixQrCode.startsWith('data:') ? payment.pixQrCode : `data:image/png;base64,${payment.pixQrCode}`}
+                alt="QR Code PIX"
+                className="h-48 w-48 rounded-xl border border-violet-200 bg-white p-2"
+              />
+            </div>
+          )}
+
+          <p className="text-xs text-center text-violet-700">
+            Escaneie o QR code ou copie o código abaixo
           </p>
 
           <div className="rounded-xl bg-white p-3 font-mono text-xs text-gray-700 break-all border border-violet-200">
@@ -86,14 +131,12 @@ export function PaymentStatus({ orderId }: PaymentStatusProps) {
           </button>
 
           {payment.pixExpiration && (
-            <p className="text-center text-xs text-violet-600">
-              Expira em: {new Date(payment.pixExpiration).toLocaleTimeString('pt-BR')}
-            </p>
+            <PixCountdown expiresAt={payment.pixExpiration} />
           )}
         </div>
       )}
 
-      {/* Pago */}
+      {/* Paid */}
       {payment.status === 'PAID' && (
         <div className="rounded-2xl bg-green-50 p-4 text-center">
           <p className="text-sm font-medium text-green-700">

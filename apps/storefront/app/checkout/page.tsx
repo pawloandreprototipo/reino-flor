@@ -65,7 +65,12 @@ export default function CheckoutPage() {
         couponCode: data.couponCode || undefined,
       })
       clearCart()
-      router.push(`/pedido/${res.data.data.id}`)
+      const oid = res.data.data.id
+      if (data.paymentMethod === 'CREDIT_CARD') {
+        router.push(`/pagamento/${oid}`)
+      } else {
+        router.push(`/pedido/${oid}`)
+      }
     } catch (e: unknown) {
       const err = e as { response?: { data?: { error?: string } } }
       setError(err.response?.data?.error ?? 'Erro ao finalizar pedido')
