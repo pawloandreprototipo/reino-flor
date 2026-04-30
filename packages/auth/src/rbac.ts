@@ -8,6 +8,7 @@ type Permission =
   | 'settings:write'
   | 'vendors:manage'
   | 'affiliates:manage'
+  | 'campaigns:manage'
 
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   SUPER_ADMIN: [
@@ -16,6 +17,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'customers:read', 'customers:write',
     'analytics:read', 'settings:write',
     'vendors:manage', 'affiliates:manage',
+    'campaigns:manage',
   ],
   ADMIN: [
     'products:read', 'products:write', 'products:delete',
@@ -23,12 +25,14 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'customers:read', 'customers:write',
     'analytics:read', 'settings:write',
     'vendors:manage', 'affiliates:manage',
+    'campaigns:manage',
   ],
   MANAGER: [
     'products:read', 'products:write',
     'orders:read', 'orders:write',
     'customers:read',
     'analytics:read',
+    'campaigns:manage',
   ],
   VENDOR: [
     'products:read', 'products:write',
