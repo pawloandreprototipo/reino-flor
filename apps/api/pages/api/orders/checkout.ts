@@ -4,6 +4,7 @@ import { prisma } from '@reino-flor/database'
 import { withAuth, AuthenticatedRequest } from '../../../middleware/auth'
 import { created, badRequest, serverError } from '../../../lib/response'
 import { getOrderConfirmationQueue } from '../../../lib/queues'
+import { reserveStock, InsufficientStockError } from '../../../lib/inventory'
 
 const schema = z.object({
   storeSlug: z.string(),
@@ -77,38 +78,62 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             ? subtotal * (Number(coupon.value) / 100)
             : Number(coupon.value)
           couponId = coupon.id
-          await prisma.coupon.update({ where: { id: coupon.id }, data: { usedCount: { increment: 1 } } })
         }
       }
     }
 
     const total = subtotal - discount + shippingCost
 
-    const order = await prisma.order.create({
-      data: {
-        storeId: store.id,
-        userId: user.sub,
-        addressId: addressId ?? null,
-        couponId,
-        subtotal,
-        discount,
-        shippingCost,
-        total,
-        items: { create: orderItems },
-        payment: {
-          create: {
-            provider: paymentMethod === 'PIX' ? 'PIX' : 'STRIPE',
-            method: paymentMethod,
-            amount: total,
-            status: 'PENDING',
+    // Wrap stock reservation + order creation in a single transaction
+    let order: any
+    try {
+      order = await prisma.$transaction(async (tx) => {
+        // Reserve stock for all items
+        await reserveStock(
+          items.map(item => ({ productId: item.productId, quantity: item.quantity })),
+          tx
+        )
+
+        // Update coupon usage inside transaction
+        if (couponId) {
+          await tx.coupon.update({ where: { id: couponId }, data: { usedCount: { increment: 1 } } })
+        }
+
+        // Create order
+        const newOrder = await tx.order.create({
+          data: {
+            storeId: store.id,
+            userId: user.sub,
+            addressId: addressId ?? null,
+            couponId,
+            subtotal,
+            discount,
+            shippingCost,
+            total,
+            items: { create: orderItems },
+            payment: {
+              create: {
+                provider: paymentMethod === 'PIX' ? 'PIX' : 'STRIPE',
+                method: paymentMethod,
+                amount: total,
+                status: 'PENDING',
+              },
+            },
           },
-        },
-      },
-      include: {
-        items: true,
-        payment: true,
-      },
-    })
+          include: {
+            items: true,
+            payment: true,
+          },
+        })
+
+        return newOrder
+      })
+    } catch (e) {
+      if (e instanceof InsufficientStockError) {
+        return badRequest(res, e.message)
+      }
+      throw e
+    }
 
     // Limpar carrinho do usuário
     await prisma.cartItem.deleteMany({ where: { userId: user.sub } })
@@ -126,7 +151,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             orderId: order.id,
             userEmail: dbUser.email,
             userName: dbUser.name,
-            items: order.items.map(i => ({
+            items: order.items.map((i: any) => ({
               name: i.name,
               quantity: i.quantity,
               price: Number(i.price),

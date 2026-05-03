@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '../../../lib/prisma'
 import { getStripe } from '../../../lib/payments/stripe'
 import { serverError } from '../../../lib/response'
+import { fulfillStock } from '../../../lib/inventory'
 
 export const config = { api: { bodyParser: false } }
 
@@ -38,14 +39,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const orderId = intent.metadata?.orderId
         if (!orderId) break
 
-        await prisma.payment.updateMany({
-          where: { providerRef: intent.id },
-          data: { status: 'PAID', paidAt: new Date() },
+        // Check if already fulfilled to avoid double fulfillment
+        const existingOrder = await prisma.order.findUnique({ where: { id: orderId } })
+        if (existingOrder?.status === 'CONFIRMED') break
+
+        // Fetch order items for stock fulfillment
+        const orderItems = await prisma.orderItem.findMany({
+          where: { orderId },
+          select: { productId: true, quantity: true },
         })
 
-        await prisma.order.updateMany({
-          where: { id: orderId },
-          data: { status: 'CONFIRMED' },
+        await prisma.$transaction(async (tx) => {
+          await tx.payment.updateMany({
+            where: { providerRef: intent.id },
+            data: { status: 'PAID', paidAt: new Date() },
+          })
+
+          await tx.order.updateMany({
+            where: { id: orderId },
+            data: { status: 'CONFIRMED' },
+          })
+
+          if (orderItems.length > 0) {
+            await fulfillStock(orderId, orderItems, tx)
+          }
         })
         break
       }
