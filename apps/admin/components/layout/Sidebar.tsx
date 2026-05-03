@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, ShoppingCart, Users,
-  Tag, BarChart2, LogOut, Flower2, Layers,
+  Tag, BarChart2, LogOut, Flower2, Layers, Warehouse, Mail,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -16,6 +16,8 @@ const navItems = [
   { href: '/dashboard/coupons', label: 'Cupons', icon: Tag },
   { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart2 },
   { href: '/dashboard/builder', label: 'Builder', icon: Layers },
+  { href: '/dashboard/inventory', label: 'Inventário', icon: Warehouse },
+  { href: '/dashboard/email', label: 'Email Marketing', icon: Mail },
 ]
 
 export function Sidebar() {

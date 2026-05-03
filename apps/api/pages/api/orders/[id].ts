@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { prisma } from '@reino-flor/database'
 import { withAuth, AuthenticatedRequest } from '../../../middleware/auth'
 import { ok, badRequest, notFound, serverError } from '../../../lib/response'
+import { releaseStock, restoreStock } from '../../../lib/inventory'
 
 const updateSchema = z.object({
   status: z.enum(['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']).optional(),
@@ -43,6 +44,33 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'PUT') {
       const parsed = updateSchema.safeParse(req.body)
       if (!parsed.success) return badRequest(res, parsed.error.errors[0].message)
+
+      const { status, trackingCode, notes } = parsed.data
+
+      // Handle stock operations on cancellation
+      if (status === 'CANCELLED' && order.status !== 'CANCELLED') {
+        const orderItems = order.items.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        }))
+
+        const updated = await prisma.$transaction(async (tx) => {
+          // If order was already fulfilled (CONFIRMED or later), restore quantity
+          if (['CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED'].includes(order.status)) {
+            await restoreStock(order.id, orderItems, tx)
+          } else {
+            // Order was PENDING, release reserved stock
+            await releaseStock(order.id, orderItems, tx)
+          }
+
+          return tx.order.update({
+            where: { id: order.id },
+            data: { status, trackingCode, notes },
+          })
+        })
+
+        return ok(res, updated)
+      }
 
       const updated = await prisma.order.update({
         where: { id: order.id },
